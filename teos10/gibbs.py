@@ -8,7 +8,7 @@ from . import constants
 
 
 def purewater(tempK, presPa):
-    """Gibbs energy of pure water.
+    """Gibbs energy of pure water in J/kg.
 
     Source: http://www.teos-10.org/pubs/IAPWS-2009-Supplementary.pdf (IAPWS09)
 
@@ -72,7 +72,7 @@ def purewater(tempK, presPa):
 
 
 def saline(tempK, presPa, sal):
-    """Saline part of the Gibbs energy of seawater.
+    """Saline part of the Gibbs energy of seawater in J/kg.
 
     Source: http://www.teos-10.org/pubs/IAPWS-08.pdf (IAPWS08)
 
@@ -166,4 +166,5 @@ def saline(tempK, presPa, sal):
 
 
 def seawater(tempK, presPa, sal):
+    """Gibbs energy of seawater in J/kg."""
     return purewater(tempK, presPa) + saline(tempK, presPa, sal)
