@@ -1,12 +1,12 @@
 import numpy as np
 import teos10
 
-# Test values from IAPWS08 Table 8
+# Test input values from IAPWS08 Table 8
 tempK_sal = np.array([273.15, 353, 273.15])
 presPa_sal = np.array([101_325, 101_325, 1e8])
 sal = np.array([0.035_165_04, 0.1, 0.035_165_04])
 
-# Test values from IAPWS09 Table 6
+# Test input values from IAPWS09 Table 6
 tempK_pure = np.array([273.15, 273.15, 313.15])
 presPa_pure = np.array([101_325, 1e8, 101_325])
 
@@ -86,3 +86,24 @@ def test_heatCapacity_saline():
         - check_values
         == 0
     ), "Saline component of heat capacity does not match check values from IAPWS08."
+
+
+def test_waterChemicalPotential_saline():
+    """Compare saline part of water chemical potential with check values from IAPWS08.
+    """
+    check_values = np.array(
+        [-0.235_181_411 * 10 ** 4, -0.101_085_536 * 10 ** 5, -0.240_897_806 * 10 ** 4]
+    )
+    assert np.all(
+        sigfig(
+            teos10.properties.waterChemicalPotential(
+                tempK_sal, presPa_sal, sal, gibbsfunc=teos10.gibbs.saline
+            ),
+            9,
+        )
+        - check_values
+        == 0
+    ), (
+        "Saline part of water chemical potential does not match "
+        + "check values from IAPWS08."
+    )
