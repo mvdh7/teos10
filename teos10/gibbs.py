@@ -71,8 +71,8 @@ def purewater(tempK, presPa):
     return Gpure
 
 
-def seawater(tempK, presPa, sal):
-    """Gibbs energy of seawater.
+def saline(tempK, presPa, sal):
+    """Saline part of the Gibbs energy of seawater.
 
     Source: http://www.teos-10.org/pubs/IAPWS-08.pdf
 
@@ -153,12 +153,16 @@ def seawater(tempK, presPa, sal):
     cxi2_lncxi = cxi ** 2 * log(cxi)
     # Initialise with zero and increment following Eq. (4):
     Gsalt = full(size(tempK), 0.0)
-    for j, k in itertools.product(range(6), range(7)):
+    nterms = 0
+    for j, k in itertools.product(range(7), range(6)):
         addG = 0
         if (1, j, k) in Gdict.keys():
             addG = addG + Gdict[(1, j, k)] * cxi2_lncxi
+            nterms += 1
         for i in range(2, 8):
             if (i, j, k) in Gdict.keys():
                 addG = addG + Gdict[(i, j, k)] * cxi ** i
+                nterms += 1
             Gsalt = Gsalt + addG * ctau**j * cpi**k
-    return purewater(tempK, presPa) + Gsalt
+    print(nterms)
+    return Gsalt
