@@ -44,7 +44,6 @@ def d2G_dp2(gibbsfunc):
     return egrad(dG_dp, argnum=1)
 
 
-# Define functions for solution properties
 def density(*args, gibbsfunc=default):
     """Density (rho) in kg/m**3.  IAPWS09 Table 3 (4)."""
     return 1.0 / dG_dp(gibbsfunc)(*args)
@@ -72,7 +71,6 @@ def internalEnergy(*args, gibbsfunc=default):
 
 def helmholtzEnergy(*args, gibbsfunc=default):
     """Specific Helmholtz energy (f) in J/kg.  IAPWS09 Table 3 (9)."""
-    # Table 3, Eq. (9)
     return gibbsfunc(*args) - args[1] * dG_dp(gibbsfunc)(*args)
 
 

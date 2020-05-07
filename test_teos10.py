@@ -34,5 +34,3 @@ def test_gibbs_saline():
         sigfig(teos10.gibbs.saline(tempK_sal, presPa_sal, sal), 9) - check_values == 0
     ), "Saline part of Gibbs function does not match check values from IAPWS08."
 
-
-test_gibbs_purewater()

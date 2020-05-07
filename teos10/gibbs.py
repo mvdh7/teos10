@@ -10,13 +10,13 @@ from . import constants
 def purewater(tempK, presPa):
     """Gibbs energy of pure water.
 
-    Source: http://www.teos-10.org/pubs/IAPWS-2009-Supplementary.pdf
+    Source: http://www.teos-10.org/pubs/IAPWS-2009-Supplementary.pdf (IAPWS09)
 
     Validity:
       * 100 < presPa < 1e8 Pa
       * (270.5 - presPa*7.43e-8) < tempK < 313.15 K
       """
-    # Coefficients of the Gibbs function as defined in Table 2:
+    # Coefficients of the Gibbs function as defined in IAPWS09 Table 2
     Gdict = {
         (0, 0): +0.101_342_743_139_674 * 10 ** 3,
         (3, 2): +0.499_360_390_819_152 * 10 ** 3,
@@ -60,10 +60,10 @@ def purewater(tempK, presPa):
         (7, 1): -0.963_108_119_393_062 * 10,
         (3, 1): -0.672_507_783_145_070 * 10 ** 3,
     }
-    # Reduce temperature and pressure:
+    # Reduce temperature and pressure
     ctau = (tempK - constants.tzero) / constants.tstar
     cpi = (presPa - constants.pnorm) / constants.pstar
-    # Initialise with zero and increment following Eq. (1):
+    # Initialise with zero and increment following Eq. (1)
     Gpure = full(size(tempK), 0.0)
     for j, k in itertools.product(range(8), range(7)):
         if (j, k) in Gdict.keys():
@@ -74,12 +74,13 @@ def purewater(tempK, presPa):
 def saline(tempK, presPa, sal):
     """Saline part of the Gibbs energy of seawater.
 
-    Source: http://www.teos-10.org/pubs/IAPWS-08.pdf
+    Source: http://www.teos-10.org/pubs/IAPWS-08.pdf (IAPWS08)
 
     Validity:
       * 100 < presPa < 1e8 Pa
       * (270.5 - presPa*7.43e-8) < tempK < 313.15 K
       """
+  # Coefficients of the Gibbs function as defined in IAPWS08 Table 2
     Gdict = {
         (1, 0, 0): +0.581_281_456_626_732 * 10 ** 4,
         (2, 2, 1): -0.860_764_303_783_977 * 10 ** 3,
@@ -146,12 +147,12 @@ def saline(tempK, presPa, sal):
         (4, 1, 1): -0.226_683_558_512_829 * 10 ** 2,
         (2, 2, 5): -0.792_001_547_211_682 * 10,
     }
-    # Reduce temperature, pressure and salinity:
+    # Reduce temperature, pressure and salinity
     ctau = (tempK - constants.tzero) / constants.tstar
     cpi = (presPa - constants.pnorm) / constants.pstar
     cxi = sqrt(sal / constants.sstar)
     cxi2_lncxi = cxi ** 2 * log(cxi)
-    # Initialise with zero and increment following Eq. (4):
+    # Initialise with zero and increment following Eq. (4)
     Gsalt = full(size(tempK), 0.0)
     for j, k in itertools.product(range(7), range(6)):
         addG = full(size(tempK), 0.0)
