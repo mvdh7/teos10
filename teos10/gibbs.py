@@ -1,4 +1,4 @@
-# teos10: Unofficial Python implementation of the TEOS-10 properties of water.
+# teos10: unofficial Python implementation of the TEOS-10 properties of water.
 # Copyright (C) 2020  Matthew Paul Humphreys  (GNU GPLv3)
 """Gibbs energy functions."""
 
@@ -153,16 +153,16 @@ def saline(tempK, presPa, sal):
     cxi2_lncxi = cxi ** 2 * log(cxi)
     # Initialise with zero and increment following Eq. (4):
     Gsalt = full(size(tempK), 0.0)
-    nterms = 0
     for j, k in itertools.product(range(7), range(6)):
-        addG = 0
-        if (1, j, k) in Gdict.keys():
-            addG = addG + Gdict[(1, j, k)] * cxi2_lncxi
-            nterms += 1
+        addG = full(size(tempK), 0.0)
+        if (1, j, k) in Gdict:
+            addG = Gdict[(1, j, k)] * cxi2_lncxi
         for i in range(2, 8):
-            if (i, j, k) in Gdict.keys():
+            if (i, j, k) in Gdict:
                 addG = addG + Gdict[(i, j, k)] * cxi ** i
-                nterms += 1
-            Gsalt = Gsalt + addG * ctau**j * cpi**k
-    print(nterms)
+        Gsalt = Gsalt + addG * ctau ** j * cpi ** k
     return Gsalt
+
+
+def seawater(tempK, presPa, sal):
+    return purewater(tempK, presPa) + saline(tempK, presPa, sal)

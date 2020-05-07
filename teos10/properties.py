@@ -1,81 +1,143 @@
+# teos10: unofficial Python implementation of the TEOS-10 properties of water.
+# Copyright (C) 2020  Matthew Paul Humphreys  (GNU GPLv3)
+"""Water properties based on derivatives of Gibbs energy functions."""
+
 from autograd.numpy import sqrt
 from autograd import elementwise_grad as egrad
-from . import gibbs
+from . import constants, gibbs
 
-# Get differentials
-gt = egrad(gibbs.purewater, argnum=0)
-gp = egrad(gibbs.purewater, argnum=1)
-gtt = egrad(gt, argnum=0)
-gtp = egrad(gt, argnum=1)
-gpp = egrad(gp, argnum=1)
+default = gibbs.seawater  # which Gibbs energy function to use by default
+
+
+def dG_dT(gibbsfunc):
+    """Function for the first derivative of `gibbsfunc` w.r.t. temperature."""
+    return egrad(gibbsfunc, argnum=0)
+
+
+def dG_dp(gibbsfunc):
+    """Function for the first derivative of `gibbsfunc` w.r.t. pressure."""
+    return egrad(gibbsfunc, argnum=1)
+
+
+def dG_dS(gibbsfunc):
+    """Function for the first derivative of `gibbsfunc` w.r.t. salinity."""
+    return egrad(gibbsfunc, argnum=2)
+
+
+def d2G_dT2(gibbsfunc):
+    """Function for the second derivative of `gibbsfunc` w.r.t. temperature."""
+    return egrad(dG_dT, argnum=0)
+
+
+def d2G_dSdp(gibbsfunc):
+    """Function for the derivative of `gibbsfunc` w.r.t. salinity and pressure."""
+    return egrad(dG_dp, argnum=2)
+
+
+def d2G_dTdp(gibbsfunc):
+    """Function for the derivative of `gibbsfunc` w.r.t. temperature and pressure."""
+    return egrad(dG_dT, argnum=1)
+
+
+def d2G_dp2(gibbsfunc):
+    """Function for the second derivative of `gibbsfunc` w.r.t. pressure."""
+    return egrad(dG_dp, argnum=1)
+
 
 # Define functions for solution properties
-def rho(tempK, presPa):
-    """Density in kg/m**3."""
-    # Table 3, Eq. (4)
-    return 1 / gp(tempK, presPa)
+def density(*args, gibbsfunc=default):
+    """Density (rho) in kg/m**3.  IAPWS09 Table 3 (4)."""
+    return 1.0 / dG_dp(gibbsfunc)(*args)
 
 
-def s(tempK, presPa):
-    """Specific entropy in J/(kg*K)."""
-    # Table 3, Eq. (5)
-    return -gt(tempK, presPa)
+def entropy(*args, gibbsfunc=default):
+    """Specific entropy (s) in J/(kg*K).  IAPWS09 Table 3 (5)."""
+    return -dG_dT(gibbsfunc)(*args)
 
 
-def cp(tempK, presPa):
-    """Specific isobaric heat capacity in J/(kg*K)."""
-    # Table 3, Eq. (6)
-    return -tempK * gtt(tempK, presPa)
+def heatCapacity(*args, gibbsfunc=default):
+    """Specific isobaric heat capacity (c_p) in J/(kg*K).  IAPWS09 Table 3 (6)."""
+    return -args[0] * d2G_dT2(gibbsfunc)(*args)
 
 
-def h(tempK, presPa):
-    """Specific enthalpy in J/kg."""
-    # Table 3, Eq. (7)
-    return gibbs.purewater(tempK, presPa) + tempK * s(tempK, presPa)
+def enthalpy(*args, gibbsfunc=default):
+    """Specific enthalpy (h) in J/kg.  IAPWS09 Table 3 (7)."""
+    return gibbsfunc(*args) + args[0] * entropy(*args, gibbsfunc)
 
 
-def u(tempK, presPa):
-    """Specific internal energy in J/kg."""
-    # Table 3, Eq. (8)
-    return gibbs.purewater(tempK, presPa) + tempK * s(tempK, presPa) - presPa * gp(tempK, presPa)
+def internalEnergy(*args, gibbsfunc=default):
+    """Specific internal energy (u) in J/kg.  IAPWS09 Table 3 (8)."""
+    return enthalpy(*args, gibbsfunc) - args[1] * dG_dp(gibbsfunc)(*args)
 
 
-def f(tempK, presPa):
-    """Specific Helmholtz energy in J/kg."""
+def helmholtzEnergy(*args, gibbsfunc=default):
+    """Specific Helmholtz energy (f) in J/kg.  IAPWS09 Table 3 (9)."""
     # Table 3, Eq. (9)
-    return gibbs.purewater(tempK, presPa) - presPa * gp(tempK, presPa)
+    return gibbsfunc(*args) - args[1] * dG_dp(gibbsfunc)(*args)
 
 
-def alpha(tempK, presPa):
-    """Thermal expansion coefficient in 1/K."""
-    # Table 3, Eq. (10)
-    return gtp(tempK, presPa) / gp(tempK, presPa)
+def thermalExpansion(*args, gibbsfunc=default):
+    """Thermal expansion coefficient (alpha) in 1/K.  IAPWS09 Table 3 (10)."""
+    return d2G_dTdp(gibbsfunc)(*args) / dG_dp(gibbsfunc)(*args)
 
 
-def bs(tempK, presPa):
-    """Isentropic temp.-presPas. coefficient, adiabatic lapse rate in K/Pa."""
-    # Table 3, Eq. (11)
-    return -gtp(tempK, presPa) / gp(tempK, presPa)
+def adiabaticLapseRate(*args, gibbsfunc=default):
+    """Isentropic temperature-pressure coefficient, adiabatic lapse rate (beta_s) in
+    K/Pa.  IAPWS09 Table 3 (11)."""
+    return -d2G_dTdp(gibbsfunc)(*args) / dG_dp(gibbsfunc)(*args)
 
 
-def kt(tempK, presPa):
-    """Isothermal compresPasibility in 1/Pa."""
-    # Table 3, Eq. (12)
-    return -gpp(tempK, presPa) / gp(tempK, presPa)
+def isothermalCompressibility(*args, gibbsfunc=default):
+    """Isothermal compressibility (kappa_T) in 1/Pa.  IAPWS09 Table 3 (12)."""
+    return -d2G_dp2(gibbsfunc)(*args) / dG_dp(gibbsfunc)(*args)
 
 
-def ks(tempK, presPa):
-    """Isentropic compresPasibility in 1/Pa."""
-    # Table 3, Eq. (13)
-    return (gtp(tempK, presPa) ** 2 - gtt(tempK, presPa) * gpp(tempK, presPa)) / (
-        gp(tempK, presPa) * gtt(tempK, presPa)
+def isenotropicCompressibility(*args, gibbsfunc=default):
+    """Isentropic compressibility (kappa_s) in 1/Pa.  IAPWS09 Table 3 (13)."""
+    return (
+        d2G_dTdp(gibbsfunc)(*args) ** 2
+        - d2G_dT2(gibbsfunc)(*args) * d2G_dp2(gibbsfunc)(*args)
+    ) / (dG_dp(gibbsfunc)(*args) * dG_dT(gibbsfunc)(*args))
+
+
+def soundSpeed(*args, gibbsfunc=default):
+    """Speed of sound (w) in m/s.  IAPWS09 Table 3 (14)."""
+    return dG_dp(gibbsfunc)(*args) * sqrt(
+        d2G_dT2(gibbsfunc)(*args)
+        / (
+            d2G_dTdp(gibbsfunc)(*args) ** 2
+            - d2G_dT2(gibbsfunc)(*args) * d2G_dp2(gibbsfunc)(*args)
+        )
     )
 
 
-def w(tempK, presPa):
-    """Speed of sound in m/s."""
-    # Table 3, Eq. (14)
-    return gp(tempK, presPa) * sqrt(
-        gtt(tempK, presPa)
-        / (gtp(tempK, presPa) ** 2 - gtt(tempK, presPa) * gpp(tempK, presPa))
+def relativeChemicalPotential(*args, gibbsfunc=default):
+    """Relative chemical potential (mu) in J/kg.  IAPWS08 Table 5 (25)."""
+    return dG_dS(gibbsfunc)(*args)
+
+
+def waterChemicalPotential(*args, gibbsfunc=default):
+    """Chemical potential of H2O (mu_W) in J/kg.  IAPWS08 Table 5 (26)."""
+    return gibbsfunc(*args) - args[2] * dG_dS(gibbsfunc)(*args)
+
+
+def saltChemicalPotential(*args, gibbsfunc=default):
+    """Chemical potential of sea salt (mu_S) in J/kg.  IAPWS08 Table 5 (27)."""
+    return gibbsfunc(*args) + (1 - args[2]) * dG_dS(gibbsfunc)(*args)
+
+
+def seawaterMolality(sal):
+    """Molality of seawater from its salinity."""
+    return sal / ((1.0 - sal) * constants.saltMass)
+
+
+def osmotic(*args, gibbsfunc=default):
+    """Osmotic coefficient (phi), dimensionless.  IAPWS08 Table 5 (28)."""
+    return -waterChemicalPotential(*args, gibbsfunc=default) / (
+        seawaterMolality(args[2]) * constants.Rgas * args[0]
     )
+
+
+def halineContraction(*args, gibbsfunc=default):
+    """Haline contraction coefficient (beta) in kg/kg.  IAPWS08 Table 5 (29)."""
+    return -d2G_dSdp(gibbsfunc)(*args) / dG_dp(gibbsfunc)(*args)
