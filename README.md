@@ -8,4 +8,3 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Unofficial Python implementation of the TEOS-10 properties of water.
-10.5281/zenodo.3813343
