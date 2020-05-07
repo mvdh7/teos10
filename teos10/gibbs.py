@@ -74,7 +74,7 @@ def purewater(tempK, presPa):
 def seawater(tempK, presPa, sal):
     """Gibbs energy of seawater.
 
-    Source: http://www.teos-10.org/pubs/IAPWS-2009-Supplementary.pdf
+    Source: http://www.teos-10.org/pubs/IAPWS-08.pdf
 
     Validity:
       * 100 < presPa < 1e8 Pa
