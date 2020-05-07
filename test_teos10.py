@@ -18,15 +18,17 @@ def sigfig(x, sf):
 
 
 def test_gibbs_purewater():
+    """Compare pure water Gibbs energy with check values from IAPWS09."""
     check_values = np.array(
         [0.101_342_743 * 10 ** 3, 0.977_303_868 * 10 ** 5, -0.116_198_898 * 10 ** 5]
     )
     assert np.all(
         sigfig(teos10.gibbs.purewater(tempK_pure, presPa_pure), 9) - check_values == 0
     ), "Pure water part of Gibbs function does not match check values from IAPWS09."
-    
+
 
 def test_gibbs_saline():
+    """Compare saline component of Gibbs energy with check values from IAPWS08."""
     check_values = np.array(
         [-0.101_342_742 * 10 ** 3, +0.150_871_740 * 10 ** 5, -0.260_093_051 * 10 ** 4]
     )
@@ -34,3 +36,53 @@ def test_gibbs_saline():
         sigfig(teos10.gibbs.saline(tempK_sal, presPa_sal, sal), 9) - check_values == 0
     ), "Saline part of Gibbs function does not match check values from IAPWS08."
 
+
+def test_soundSpeed_purewater():
+    """Compare pure water speed of sound with check values from IAPWS09."""
+    check_values = np.array(
+        [0.140_240_099 * 10 ** 4, 0.157_543_089 * 10 ** 4, 0.152_891_242 * 10 ** 4]
+    )
+    assert np.all(
+        sigfig(
+            teos10.properties.soundSpeed(
+                tempK_pure, presPa_pure, gibbsfunc=teos10.gibbs.purewater
+            ),
+            9,
+        )
+        - check_values
+        == 0
+    ), "Pure water speed of sound does not match check values from IAPWS09."
+
+
+def test_heatCapacity_purewater():
+    """Compare pure water heat capacity with check values from IAPWS09."""
+    check_values = np.array(
+        [0.421_941_153 * 10 ** 4, 0.390_523_030 * 10 ** 4, 0.417_942_416 * 10 ** 4]
+    )
+    assert np.all(
+        sigfig(
+            teos10.properties.heatCapacity(
+                tempK_pure, presPa_pure, gibbsfunc=teos10.gibbs.purewater
+            ),
+            9,
+        )
+        - check_values
+        == 0
+    ), "Pure water heat capacity does not match check values from IAPWS09."
+
+
+def test_heatCapacity_saline():
+    """Compare saline component of heat capacity with check values from IAPWS08."""
+    check_values = np.array(
+        [-0.232_959_023 * 10 ** 3, -0.451_566_952 * 10 ** 3, -0.133_318_225 * 10 ** 3]
+    )
+    assert np.all(
+        sigfig(
+            teos10.properties.heatCapacity(
+                tempK_sal, presPa_sal, sal, gibbsfunc=teos10.gibbs.saline
+            ),
+            9,
+        )
+        - check_values
+        == 0
+    ), "Saline component of heat capacity does not match check values from IAPWS08."

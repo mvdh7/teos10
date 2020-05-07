@@ -26,22 +26,22 @@ def dG_dS(gibbsfunc):
 
 def d2G_dT2(gibbsfunc):
     """Function for the second derivative of `gibbsfunc` w.r.t. temperature."""
-    return egrad(dG_dT, argnum=0)
+    return egrad(dG_dT(gibbsfunc), argnum=0)
 
 
 def d2G_dSdp(gibbsfunc):
     """Function for the derivative of `gibbsfunc` w.r.t. salinity and pressure."""
-    return egrad(dG_dp, argnum=2)
+    return egrad(dG_dp(gibbsfunc), argnum=2)
 
 
 def d2G_dTdp(gibbsfunc):
     """Function for the derivative of `gibbsfunc` w.r.t. temperature and pressure."""
-    return egrad(dG_dT, argnum=1)
+    return egrad(dG_dT(gibbsfunc), argnum=1)
 
 
 def d2G_dp2(gibbsfunc):
     """Function for the second derivative of `gibbsfunc` w.r.t. pressure."""
-    return egrad(dG_dp, argnum=1)
+    return egrad(dG_dp(gibbsfunc), argnum=1)
 
 
 def density(*args, gibbsfunc=default):
