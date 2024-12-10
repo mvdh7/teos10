@@ -1,5 +1,5 @@
 # teos10: unofficial Python implementation of the TEOS-10 properties of water.
-# Copyright (C) 2020  Matthew Paul Humphreys  (GNU GPLv3)
+# Copyright (C) 2020-2024  Matthew Paul Humphreys  (GNU GPLv3)
 """Constants from IAPWS08 Table 1."""
 
 pnorm = 101_325  # normal pressure in Pa

@@ -1,5 +1,5 @@
 # teos10: unofficial Python implementation of the TEOS-10 properties of water.
-# Copyright (C) 2020  Matthew Paul Humphreys  (GNU GPLv3)
+# Copyright (C) 2020-2024  Matthew Paul Humphreys  (GNU GPLv3)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,6 +26,5 @@ __all__ = [
     "gibbs",
     "properties",
 ]
-
 __author__ = "Humphreys, Matthew P."
-__version__ = "0.0.1"
+__version__ = "0.1"

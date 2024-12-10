@@ -1,9 +1,10 @@
 # teos10: unofficial Python implementation of the TEOS-10 properties of water.
-# Copyright (C) 2020  Matthew Paul Humphreys  (GNU GPLv3)
+# Copyright (C) 2020-2024  Matthew Paul Humphreys  (GNU GPLv3)
 """Water properties based on derivatives of Gibbs energy functions."""
 
-from autograd.numpy import sqrt
 from autograd import elementwise_grad as egrad
+from autograd.numpy import sqrt
+
 from . import constants, gibbs
 
 default = gibbs.seawater  # which Gibbs energy function to use by default
