@@ -9,14 +9,26 @@ from jax import numpy as np
 from . import constants
 
 
-def purewater(tempK, presPa):
+def water(temperature, pressure_Pa):
     """Gibbs energy of pure water in J/kg.
 
     Source: http://www.teos-10.org/pubs/IAPWS-2009-Supplementary.pdf (IAPWS09)
 
     Validity:
-        100 < presPa < 1e8 Pa
-       (270.5 - presPa*7.43e-8) < tempK < 313.15 K
+        100 < pressure_Pa < 1e8 Pa
+       (270.5 - pressure_Pa*7.43e-8) < temperature < 313.15 K
+
+    Parameters
+    ----------
+    temperature : array-like
+        Temperature in K.
+    pressure_Pa : array-like
+        Pressure in Pa.
+
+    Returns
+    -------
+    array-like
+        The Gibbs energy in J/kg.
     """
     # Coefficients of the Gibbs function as defined in IAPWS09 Table 2
     Gdict = {
@@ -63,24 +75,38 @@ def purewater(tempK, presPa):
         (3, 1): -0.672_507_783_145_070 * 10**3,
     }
     # Reduce temperature and pressure
-    ctau = (tempK - constants.tzero) / constants.tstar
-    cpi = (presPa - constants.pnorm) / constants.pstar
+    ctau = (temperature - constants.temperature_zero) / constants.temperature_st
+    cpi = (pressure_Pa - constants.pressure_n) / constants.pressure_st
     # Initialise with zero and increment following Eq. (1)
-    Gpure = np.full(np.shape(tempK), 0.0)
+    Gpure = np.full(np.shape(temperature), 0.0)
     for j, k in itertools.product(range(8), range(7)):
         if (j, k) in Gdict.keys():
             Gpure = Gpure + Gdict[(j, k)] * ctau**j * cpi**k
     return Gpure
 
 
-def saline(tempK, presPa, sal):
+def salt(temperature, pressure_Pa, salinity):
     """Saline part of the Gibbs energy of seawater in J/kg.
 
     Source: http://www.teos-10.org/pubs/IAPWS-08.pdf (IAPWS08)
 
     Validity:
-      * 100 < presPa < 1e8 Pa
-      * (270.5 - presPa*7.43e-8) < tempK < 313.15 K
+      * 100 < pressure_Pa < 1e8 Pa
+      * (270.5 - pressure_Pa*7.43e-8) < temperature < 313.15 K
+
+    Parameters
+    ----------
+    temperature : array-like
+        Temperature in K.
+    pressure_Pa : array-like
+        Pressure in Pa.
+    salinity : array-like
+        Practical salinity.
+
+    Returns
+    -------
+    array-like
+        The Gibbs energy in J/kg.
     """
     # Coefficients of the Gibbs function as defined in IAPWS08 Table 2
     Gdict = {
@@ -150,14 +176,14 @@ def saline(tempK, presPa, sal):
         (2, 2, 5): -0.792_001_547_211_682 * 10,
     }
     # Reduce temperature, pressure and salinity
-    ctau = (tempK - constants.tzero) / constants.tstar
-    cpi = (presPa - constants.pnorm) / constants.pstar
-    cxi = np.sqrt(sal / constants.sstar)
+    ctau = (temperature - constants.temperature_zero) / constants.temperature_st
+    cpi = (pressure_Pa - constants.pressure_n) / constants.pressure_st
+    cxi = np.sqrt(salinity / constants.salinity_st)
     cxi2_lncxi = cxi**2 * np.log(cxi)
     # Initialise with zero and increment following Eq. (4)
-    Gsalt = np.full(np.shape(tempK), 0.0)
+    Gsalt = np.full(np.shape(temperature), 0.0)
     for j, k in itertools.product(range(7), range(6)):
-        addG = np.full(np.shape(tempK), 0.0)
+        addG = np.full(np.shape(temperature), 0.0)
         if (1, j, k) in Gdict:
             addG = Gdict[(1, j, k)] * cxi2_lncxi
         for i in range(2, 8):
@@ -167,6 +193,21 @@ def saline(tempK, presPa, sal):
     return Gsalt
 
 
-def seawater(tempK, presPa, sal):
-    """Gibbs energy of seawater in J/kg."""
-    return purewater(tempK, presPa) + saline(tempK, presPa, sal)
+def seawater(temperature, pressure_Pa, salinity):
+    """Gibbs energy of seawater in J/kg.
+
+    Parameters
+    ----------
+    temperature : array-like
+        Temperature in K.
+    pressure_Pa : array-like
+        Pressure in Pa.
+    salinity : array-like
+        Practical salinity.
+
+    Returns
+    -------
+    array-like
+        The Gibbs energy in J/kg.
+    """
+    return water(temperature, pressure_Pa) + salt(temperature, pressure_Pa, salinity)

@@ -2,11 +2,11 @@
 # Copyright (C) 2020-2024  Matthew Paul Humphreys  (GNU GPLv3)
 """Constants from IAPWS08 Table 1."""
 
-pnorm = 101_325  # normal pressure in Pa
-pstar = 1e8  # reducing pressure in Pa
-tzero = 273.15  # Celcius zero point in K
-tstar = 40.0  # reducing temperature in K
-snorm = 0.035_165_04  # normal salinity in kg/kg
-sstar = snorm * 40 / 35  # reducing salinity in kg/kg
-Rgas = 8.314_472  # molar gas constant in J/(mol*kg)
-saltMass = 31.403_821_8  # molar mass of sea salt in g/mol
+pressure_n = 101_325  # normal pressure in Pa
+pressure_st = 1e8  # reducing pressure in Pa
+temperature_zero = 273.15  # Celcius zero point in K
+temperature_st = 40.0  # reducing temperature in K
+salinity_n = 0.035_165_04  # normal salinity in kg/kg
+salinity_st = salinity_n * 40 / 35  # reducing salinity in kg/kg
+gas_constant = 8.314_472  # molar gas constant in J/(mol*kg)
+salt_mass = 31.403_821_8  # molar mass of sea salt in g/mol

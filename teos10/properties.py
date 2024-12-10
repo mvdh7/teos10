@@ -138,13 +138,13 @@ def saltChemicalPotential(*args, gibbsfunc=default):
 
 def seawaterMolality(sal):
     """Molality of seawater from its salinity."""
-    return sal / ((1.0 - sal) * constants.saltMass)
+    return sal / ((1.0 - sal) * constants.salt_mass)
 
 
 def osmotic(*args, gibbsfunc=default):
     """Osmotic coefficient (phi), dimensionless.  IAPWS08 Table 5 (28)."""
     return -waterChemicalPotential(*args, gibbsfunc=default) / (
-        seawaterMolality(args[2]) * constants.Rgas * args[0]
+        seawaterMolality(args[2]) * constants.gas_constant * args[0]
     )
 
 
