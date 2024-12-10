@@ -2,12 +2,23 @@
 # Copyright (C) 2020-2024  Matthew Paul Humphreys  (GNU GPLv3)
 """Water properties based on derivatives of Gibbs energy functions."""
 
-from autograd import elementwise_grad as egrad
-from autograd.numpy import sqrt
+import jax
+from jax import numpy as np
 
 from . import constants, gibbs
 
 default = gibbs.seawater  # which Gibbs energy function to use by default
+
+
+def egrad(g):
+    # From https://github.com/google/jax/issues/3556#issuecomment-649779759
+    # modified to allow kwargs for g
+    def wrapped(x, *args, **kwargs):
+        y, g_vjp = jax.vjp(lambda x: g(x, *args, **kwargs), x)
+        (x_bar,) = g_vjp(np.ones_like(y))
+        return x_bar
+
+    return wrapped
 
 
 def dG_dT(gibbsfunc):
@@ -101,7 +112,7 @@ def isenotropicCompressibility(*args, gibbsfunc=default):
 
 def soundSpeed(*args, gibbsfunc=default):
     """Speed of sound (w) in m/s.  IAPWS09 Table 3 (14)."""
-    return dG_dp(gibbsfunc)(*args) * sqrt(
+    return dG_dp(gibbsfunc)(*args) * np.sqrt(
         d2G_dT2(gibbsfunc)(*args)
         / (
             d2G_dTdp(gibbsfunc)(*args) ** 2

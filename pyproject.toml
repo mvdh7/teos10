@@ -24,7 +24,6 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Chemistry",
     "Topic :: Scientific/Engineering :: Oceanography",
 ]
-url="https://github.com/mvdh7/teos10"
 dynamic = ["version"]
 
 [tool.setuptools.dynamic]

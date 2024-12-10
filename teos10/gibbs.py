@@ -4,7 +4,7 @@
 
 import itertools
 
-from autograd.numpy import full, log, size, sqrt
+from jax import numpy as np
 
 from . import constants
 
@@ -15,8 +15,8 @@ def purewater(tempK, presPa):
     Source: http://www.teos-10.org/pubs/IAPWS-2009-Supplementary.pdf (IAPWS09)
 
     Validity:
-      * 100 < presPa < 1e8 Pa
-      * (270.5 - presPa*7.43e-8) < tempK < 313.15 K
+        100 < presPa < 1e8 Pa
+       (270.5 - presPa*7.43e-8) < tempK < 313.15 K
     """
     # Coefficients of the Gibbs function as defined in IAPWS09 Table 2
     Gdict = {
@@ -66,7 +66,7 @@ def purewater(tempK, presPa):
     ctau = (tempK - constants.tzero) / constants.tstar
     cpi = (presPa - constants.pnorm) / constants.pstar
     # Initialise with zero and increment following Eq. (1)
-    Gpure = full(size(tempK), 0.0)
+    Gpure = np.full(np.shape(tempK), 0.0)
     for j, k in itertools.product(range(8), range(7)):
         if (j, k) in Gdict.keys():
             Gpure = Gpure + Gdict[(j, k)] * ctau**j * cpi**k
@@ -152,12 +152,12 @@ def saline(tempK, presPa, sal):
     # Reduce temperature, pressure and salinity
     ctau = (tempK - constants.tzero) / constants.tstar
     cpi = (presPa - constants.pnorm) / constants.pstar
-    cxi = sqrt(sal / constants.sstar)
-    cxi2_lncxi = cxi**2 * log(cxi)
+    cxi = np.sqrt(sal / constants.sstar)
+    cxi2_lncxi = cxi**2 * np.log(cxi)
     # Initialise with zero and increment following Eq. (4)
-    Gsalt = full(size(tempK), 0.0)
+    Gsalt = np.full(np.shape(tempK), 0.0)
     for j, k in itertools.product(range(7), range(6)):
-        addG = full(size(tempK), 0.0)
+        addG = np.full(np.shape(tempK), 0.0)
         if (1, j, k) in Gdict:
             addG = Gdict[(1, j, k)] * cxi2_lncxi
         for i in range(2, 8):
