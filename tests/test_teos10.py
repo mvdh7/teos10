@@ -52,72 +52,69 @@ def test_gibbs_salt():
     assert formatter(check_values) == formatter(test_values)
 
 
-# def test_soundSpeed_purewater():
-#     """Compare pure water speed of sound with check values from IAPWS09."""
-#     check_values = np.array(
-#         [0.140_240_099 * 10**4, 0.157_543_089 * 10**4, 0.152_891_242 * 10**4]
-#     )
-#     assert np.all(
-#         sigfig(
-#             teos10.properties.soundSpeed(
-#                 temperature_water, pressure_water, gibbsfunc=teos10.gibbs.purewater
-#             ),
-#             9,
-#         )
-#         - check_values
-#         == 0
-#     ), "Pure water speed of sound does not match check values from IAPWS09."
+def test_sound_speed_water():
+    """Compare pure water speed of sound with check values from IAPWS09."""
+    check_values = np.array(
+        [
+            0.140_240_099 * 10**4,
+            0.157_543_089 * 10**4,
+            0.152_891_242 * 10**4,
+        ]
+    )
+    test_values = []
+    for t, p in zip(temperature_water, pressure_water):
+        test_values.append(
+            teos10.properties.sound_speed(t, p, gfunc=teos10.gibbs.water)
+        )
+    assert formatter(check_values) == formatter(test_values)
 
 
-# def test_heatCapacity_purewater():
-#     """Compare pure water heat capacity with check values from IAPWS09."""
-#     check_values = np.array(
-#         [0.421_941_153 * 10**4, 0.390_523_030 * 10**4, 0.417_942_416 * 10**4]
-#     )
-#     assert np.all(
-#         sigfig(
-#             teos10.properties.heatCapacity(
-#                 temperature_water, pressure_water, gibbsfunc=teos10.gibbs.purewater
-#             ),
-#             9,
-#         )
-#         - check_values
-#         == 0
-#     ), "Pure water heat capacity does not match check values from IAPWS09."
+def test_heat_capacity_water():
+    """Compare pure water heat capacity with check values from IAPWS09."""
+    check_values = np.array(
+        [
+            0.421_941_153 * 10**4,
+            0.390_523_030 * 10**4,
+            0.417_942_416 * 10**4,
+        ]
+    )
+    test_values = []
+    for t, p in zip(temperature_water, pressure_water):
+        test_values.append(
+            teos10.properties.heat_capacity(t, p, gfunc=teos10.gibbs.water)
+        )
+    assert formatter(check_values) == formatter(test_values)
 
 
-# def test_heatCapacity_saline():
-#     """Compare saline component of heat capacity with check values from IAPWS08."""
-#     check_values = np.array(
-#         [-0.232_959_023 * 10**3, -0.451_566_952 * 10**3, -0.133_318_225 * 10**3]
-#     )
-#     assert np.all(
-#         sigfig(
-#             teos10.properties.heatCapacity(
-#                 temperature_salt, pressure_salt, sal, gibbsfunc=teos10.gibbs.saline
-#             ),
-#             9,
-#         )
-#         - check_values
-#         == 0
-#     ), "Saline component of heat capacity does not match check values from IAPWS08."
+def test_heat_capacity_salt():
+    """Compare saline component of heat capacity with check values from IAPWS08."""
+    check_values = np.array(
+        [
+            -0.232_959_023 * 10**3,
+            -0.451_566_952 * 10**3,
+            -0.133_318_225 * 10**3,
+        ]
+    )
+    test_values = []
+    for t, p, s in zip(temperature_salt, pressure_salt, salinity):
+        test_values.append(
+            teos10.properties.heat_capacity(t, p, s, gfunc=teos10.gibbs.salt)
+        )
+    assert formatter(check_values) == formatter(test_values)
 
 
-# def test_waterChemicalPotential_saline():
-#     """Compare saline part of water chemical potential with check values from IAPWS08."""
-#     check_values = np.array(
-#         [-0.235_181_411 * 10**4, -0.101_085_536 * 10**5, -0.240_897_806 * 10**4]
-#     )
-#     assert np.all(
-#         sigfig(
-#             teos10.properties.waterChemicalPotential(
-#                 temperature_salt, pressure_salt, sal, gibbsfunc=teos10.gibbs.saline
-#             ),
-#             9,
-#         )
-#         - check_values
-#         == 0
-#     ), (
-#         "Saline part of water chemical potential does not match "
-#         + "check values from IAPWS08."
-#     )
+def test_chemical_potential_water_salt():
+    """Compare saline part of water chemical potential with check values from IAPWS08."""
+    check_values = np.array(
+        [
+            -0.235_181_411 * 10**4,
+            -0.101_085_536 * 10**5,
+            -0.240_897_806 * 10**4,
+        ]
+    )
+    test_values = []
+    for t, p, s in zip(temperature_salt, pressure_salt, salinity):
+        test_values.append(
+            teos10.properties.chemical_potential_water(t, p, s, gfunc=teos10.gibbs.salt)
+        )
+    assert formatter(check_values) == formatter(test_values)
