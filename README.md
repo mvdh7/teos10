@@ -9,3 +9,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 Unofficial Python implementation of the TEOS-10 properties of water.
+
+## Why not just use [GSW-Python](https://teos-10.github.io/GSW-Python/?
+
+Because the functions here can be automatically differentiated with [JAX](https://jax.readthedocs.io/en/latest/).
