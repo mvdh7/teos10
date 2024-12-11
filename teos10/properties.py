@@ -17,12 +17,12 @@ def dG_dT(gfunc):
 
 def dG_dp(gfunc):
     """Function for the first derivative of `gfunc` w.r.t. pressure."""
-    return jax.grad(gfunc, argnums=1)
+    return lambda *args: jax.grad(gfunc, argnums=1)(*args) / constants.dbar_to_Pa
 
 
 def dG_dS(gfunc):
     """Function for the first derivative of `gfunc` w.r.t. salinity."""
-    return jax.grad(gfunc, argnums=2)
+    return lambda *args: jax.grad(gfunc, argnums=2)(*args) / constants.salinity_to_salt
 
 
 def d2G_dT2(gfunc):
@@ -32,17 +32,17 @@ def d2G_dT2(gfunc):
 
 def d2G_dSdp(gfunc):
     """Function for the derivative of `gfunc` w.r.t. salinity and pressure."""
-    return jax.grad(dG_dp(gfunc), argnums=2)
+    return lambda *args: jax.grad(dG_dp(gfunc), argnums=2)(*args) / constants.dbar_to_Pa
 
 
 def d2G_dTdp(gfunc):
     """Function for the derivative of `gfunc` w.r.t. temperature and pressure."""
-    return jax.grad(dG_dT(gfunc), argnums=1)
+    return lambda *args: jax.grad(dG_dT(gfunc), argnums=1)(*args) / constants.dbar_to_Pa
 
 
 def d2G_dp2(gfunc):
     """Function for the second derivative of `gfunc` w.r.t. pressure."""
-    return jax.grad(dG_dp(gfunc), argnums=1)
+    return lambda *args: jax.grad(dG_dp(gfunc), argnums=1)(*args) / constants.dbar_to_Pa
 
 
 def density(*args, gfunc=default):
@@ -113,23 +113,27 @@ def chemical_potential_relative(*args, gfunc=default):
 
 def chemical_potential_water(*args, gfunc=default):
     """Chemical potential of H2O (mu_W) in J/kg.  IAPWS08 Table 5 (26)."""
-    return gfunc(*args) - args[2] * dG_dS(gfunc)(*args)
+    salinity_s = args[2] * constants.salinity_to_salt
+    return gfunc(*args) - salinity_s * dG_dS(gfunc)(*args)
 
 
 def chemical_potential_salt(*args, gfunc=default):
     """Chemical potential of sea salt (mu_S) in J/kg.  IAPWS08 Table 5 (27)."""
-    return gfunc(*args) + (1 - args[2]) * dG_dS(gfunc)(*args)
+    salinity_s = args[2] * constants.salinity_to_salt
+    return gfunc(*args) + (1 - salinity_s) * dG_dS(gfunc)(*args)
 
 
-def molality_seawater(sal):
+def molality_seawater(salinity):
     """Molality of seawater from its salinity."""
-    return sal / ((1.0 - sal) * constants.salt_mass)
+    salinity_s = salinity * constants.salinity_to_salt
+    return salinity_s / ((1.0 - salinity_s) * constants.salt_mass)
 
 
 def osmotic(*args, gfunc=default):
     """Osmotic coefficient (phi), dimensionless.  IAPWS08 Table 5 (28)."""
+    salinity_s = args[2] * constants.salinity_to_salt
     return -chemical_potential_water(*args, gfunc=default) / (
-        molality_seawater(args[2]) * constants.gas_constant * args[0]
+        molality_seawater(salinity_s) * constants.gas_constant * args[0]
     )
 
 

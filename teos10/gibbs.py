@@ -9,7 +9,7 @@ from jax import numpy as np
 from . import constants
 
 
-def water(temperature, pressure_Pa):
+def water(temperature, pressure):
     """Gibbs energy of pure water in J/kg.
 
     Source: http://www.teos-10.org/pubs/IAPWS-2009-Supplementary.pdf (IAPWS09)
@@ -20,14 +20,14 @@ def water(temperature, pressure_Pa):
 
     Parameters
     ----------
-    temperature : array-like
+    temperature : float
         Temperature in K.
-    pressure_Pa : array-like
-        Pressure in Pa.
+    pressure : float
+        Hydrostatic pressure in dbar.
 
     Returns
     -------
-    array-like
+    float
         The Gibbs energy in J/kg.
     """
     # Coefficients of the Gibbs function as defined in IAPWS09 Table 2
@@ -74,18 +74,20 @@ def water(temperature, pressure_Pa):
         (7, 1): -0.963_108_119_393_062 * 10,
         (3, 1): -0.672_507_783_145_070 * 10**3,
     }
+    # Convert units
+    pressure_Pa = pressure * constants.dbar_to_Pa
     # Reduce temperature and pressure
     ctau = (temperature - constants.temperature_zero) / constants.temperature_st
     cpi = (pressure_Pa - constants.pressure_n) / constants.pressure_st
     # Initialise with zero and increment following Eq. (1)
-    Gpure = np.full(np.shape(temperature), 0.0)
+    Gpure = np.zeros_like(temperature)
     for j, k in itertools.product(range(8), range(7)):
         if (j, k) in Gdict.keys():
             Gpure = Gpure + Gdict[(j, k)] * ctau**j * cpi**k
     return Gpure
 
 
-def salt(temperature, pressure_Pa, salinity):
+def salt(temperature, pressure, salinity):
     """Saline part of the Gibbs energy of seawater in J/kg.
 
     Source: http://www.teos-10.org/pubs/IAPWS-08.pdf (IAPWS08)
@@ -96,16 +98,16 @@ def salt(temperature, pressure_Pa, salinity):
 
     Parameters
     ----------
-    temperature : array-like
+    temperature : float
         Temperature in K.
-    pressure_Pa : array-like
-        Pressure in Pa.
-    salinity : array-like
+    pressure_Pa : float
+        Hydrostatic pressure in dbar.
+    salinity : float
         Practical salinity.
 
     Returns
     -------
-    array-like
+    float
         The Gibbs energy in J/kg.
     """
     # Coefficients of the Gibbs function as defined in IAPWS08 Table 2
@@ -175,15 +177,18 @@ def salt(temperature, pressure_Pa, salinity):
         (4, 1, 1): -0.226_683_558_512_829 * 10**2,
         (2, 2, 5): -0.792_001_547_211_682 * 10,
     }
+    # Convert units
+    pressure_Pa = pressure * constants.dbar_to_Pa
+    salinity_s = salinity * constants.salinity_to_salt
     # Reduce temperature, pressure and salinity
     ctau = (temperature - constants.temperature_zero) / constants.temperature_st
     cpi = (pressure_Pa - constants.pressure_n) / constants.pressure_st
-    cxi = np.sqrt(salinity / constants.salinity_st)
+    cxi = np.sqrt(salinity_s / constants.salinity_st)
     cxi2_lncxi = cxi**2 * np.log(cxi)
     # Initialise with zero and increment following Eq. (4)
-    Gsalt = np.full(np.shape(temperature), 0.0)
+    Gsalt = np.zeros_like(temperature)
     for j, k in itertools.product(range(7), range(6)):
-        addG = np.full(np.shape(temperature), 0.0)
+        addG = np.zeros_like(temperature)
         if (1, j, k) in Gdict:
             addG = Gdict[(1, j, k)] * cxi2_lncxi
         for i in range(2, 8):
@@ -198,16 +203,16 @@ def seawater(temperature, pressure_Pa, salinity):
 
     Parameters
     ----------
-    temperature : array-like
+    temperature : float
         Temperature in K.
-    pressure_Pa : array-like
+    pressure_Pa : float
         Pressure in Pa.
-    salinity : array-like
+    salinity : float
         Practical salinity.
 
     Returns
     -------
-    array-like
+    float
         The Gibbs energy in J/kg.
     """
     return water(temperature, pressure_Pa) + salt(temperature, pressure_Pa, salinity)

@@ -10,3 +10,5 @@ salinity_n = 0.035_165_04  # normal salinity in kg/kg
 salinity_st = salinity_n * 40 / 35  # reducing salinity in kg/kg
 gas_constant = 8.314_472  # molar gas constant in J/(mol*kg)
 salt_mass = 31.403_821_8  # molar mass of sea salt in g/mol
+dbar_to_Pa = 10_000
+salinity_to_salt = 1e-3

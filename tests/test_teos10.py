@@ -4,12 +4,14 @@ import teos10
 
 # Test input values from IAPWS08 Table 8
 temperature_salt = np.array([273.15, 353, 273.15])
-pressure_salt = np.array([101_325, 101_325, 1e8])
-salinity = np.array([0.035_165_04, 0.1, 0.035_165_04])
+pressure_salt = np.array([101_325, 101_325, 1e8]) / teos10.constants.dbar_to_Pa
+salinity = (
+    np.array([0.035_165_04, 0.1, 0.035_165_04]) / teos10.constants.salinity_to_salt
+)
 
 # Test input values from IAPWS09 Table 6
 temperature_water = np.array([273.15, 273.15, 313.15])
-pressure_water = np.array([101_325, 1e8, 101_325])
+pressure_water = np.array([101_325, 1e8, 101_325]) / teos10.constants.dbar_to_Pa
 
 
 def factor_sigfig(x):
@@ -35,7 +37,9 @@ def test_gibbs_water():
             -0.116_198_898 * 10**5,
         ]
     )
-    test_values = teos10.gibbs.water(temperature_water, pressure_water)
+    test_values = []
+    for t, p in zip(temperature_water, pressure_water):
+        test_values.append(teos10.gibbs.water(t, p))
     assert formatter(check_values) == formatter(test_values)
 
 
@@ -48,7 +52,9 @@ def test_gibbs_salt():
             -0.260_093_051 * 10**4,
         ]
     )
-    test_values = teos10.gibbs.salt(temperature_salt, pressure_salt, salinity)
+    test_values = []
+    for t, p, s in zip(temperature_salt, pressure_salt, salinity):
+        test_values.append(teos10.gibbs.salt(t, p, s))
     assert formatter(check_values) == formatter(test_values)
 
 
