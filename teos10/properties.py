@@ -62,17 +62,19 @@ def heat_capacity(*args, gfunc=default):
 
 def enthalpy(*args, gfunc=default):
     """Specific enthalpy (h) in J/kg.  IAPWS09 Table 3 (7)."""
-    return gfunc(*args) + args[0] * entropy(*args, gfunc)
+    return gfunc(*args) + args[0] * entropy(*args, gfunc=gfunc)
 
 
 def internal_energy(*args, gfunc=default):
     """Specific internal energy (u) in J/kg.  IAPWS09 Table 3 (8)."""
-    return enthalpy(*args, gfunc) - args[1] * dG_dp(gfunc)(*args)
+    pressure_Pa = args[1] * constants.dbar_to_Pa
+    return enthalpy(*args, gfunc=gfunc) - pressure_Pa * dG_dp(gfunc)(*args)
 
 
 def helmholtz_energy(*args, gfunc=default):
     """Specific Helmholtz energy (f) in J/kg.  IAPWS09 Table 3 (9)."""
-    return gfunc(*args) - args[1] * dG_dp(gfunc)(*args)
+    pressure_Pa = args[1] * constants.dbar_to_Pa
+    return gfunc(*args) - pressure_Pa * dG_dp(gfunc)(*args)
 
 
 def thermal_expansion(*args, gfunc=default):
