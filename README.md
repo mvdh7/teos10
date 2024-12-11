@@ -10,6 +10,6 @@
 
 Unofficial Python implementation of the TEOS-10 properties of water.
 
-> **Why not just use [GSW-Python](https://teos-10.github.io/GSW-Python/?**
+> **Why not just use [GSW-Python](https://teos-10.github.io/GSW-Python/)?**
 >
-> Because the functions here can be automatically differentiated with [JAX](https://jax.readthedocs.io/en/latest/).
+> Because the functions here in teos10 can be automatically differentiated with [JAX](https://jax.readthedocs.io/en/latest/).
