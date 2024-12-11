@@ -32,7 +32,10 @@ def d2G_dT2(gfunc):
 
 def d2G_dSdp(gfunc):
     """Function for the derivative of `gfunc` w.r.t. salinity and pressure."""
-    return lambda *args: jax.grad(dG_dp(gfunc), argnums=2)(*args) / constants.dbar_to_Pa
+    return (
+        lambda *args: jax.grad(dG_dp(gfunc), argnums=2)(*args)
+        / constants.salinity_to_salt
+    )
 
 
 def d2G_dTdp(gfunc):
@@ -115,8 +118,12 @@ def chemical_potential_relative(*args, gfunc=default):
 
 def chemical_potential_water(*args, gfunc=default):
     """Chemical potential of H2O (mu_W) in J/kg.  IAPWS08 Table 5 (26)."""
-    salinity_s = args[2] * constants.salinity_to_salt
-    return gfunc(*args) - salinity_s * dG_dS(gfunc)(*args)
+    if len(args) == 3:
+        salinity_s = args[2] * constants.salinity_to_salt
+        cpw = gfunc(*args) - salinity_s * dG_dS(gfunc)(*args)
+    else:
+        cpw = gfunc(*args)
+    return cpw
 
 
 def chemical_potential_salt(*args, gfunc=default):
