@@ -27,7 +27,7 @@ classifiers = [
 dynamic = ["version"]
 
 [tool.setuptools.packages.find]
-include = ["teos10/*"]
+include = ["teos10*"]
 
 [tool.setuptools.dynamic]
 version = {attr = "teos10.__version__"}
