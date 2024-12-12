@@ -1,0 +1,11 @@
+Name                    Stmts   Miss  Cover
+-------------------------------------------
+teos10/__init__.py          6      0   100%
+teos10/constants.py        10      0   100%
+teos10/gibbs.py            41      5    88%
+teos10/properties.py       61     12    80%
+tests/__init__.py           0      0   100%
+tests/test_IAPWS08.py     139      0   100%
+tests/test_IAPWS09.py      77      1    99%
+-------------------------------------------
+TOTAL                     334     18    95%

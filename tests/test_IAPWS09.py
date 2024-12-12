@@ -102,7 +102,7 @@ def test_enthalpy_water():
     """Compare pure water enthalpy with check values from IAPWS09."""
     test_values = []
     for t, p in zip(temperature_water, pressure_water):
-        test_values.append(teos10.properties.enthalpy(t, p, gfunc=teos10.gibbs.water))
+        test_values.append(teos10.enthalpy(t, p, gfunc=teos10.gibbs.water))
     assert formatter(check_water["enthalpy"]) == formatter(test_values)
 
 
@@ -110,9 +110,7 @@ def test_helmholtz_energy_water():
     """Compare pure water Helmholtz energy with check values from IAPWS09."""
     test_values = []
     for t, p in zip(temperature_water, pressure_water):
-        test_values.append(
-            teos10.properties.helmholtz_energy(t, p, gfunc=teos10.gibbs.water)
-        )
+        test_values.append(teos10.helmholtz_energy(t, p, gfunc=teos10.gibbs.water))
     assert formatter(check_water["helmholtz_energy"]) == formatter(test_values)
 
 
@@ -120,9 +118,7 @@ def test_internal_energy_water():
     """Compare pure water internal energy with check values from IAPWS09."""
     test_values = []
     for t, p in zip(temperature_water, pressure_water):
-        test_values.append(
-            teos10.properties.internal_energy(t, p, gfunc=teos10.gibbs.water)
-        )
+        test_values.append(teos10.internal_energy(t, p, gfunc=teos10.gibbs.water))
     assert formatter(check_water["internal_energy"]) == formatter(test_values)
 
 
@@ -130,7 +126,7 @@ def test_entropy_water():
     """Compare pure water entropy with check values from IAPWS09."""
     test_values = []
     for t, p in zip(temperature_water, pressure_water):
-        test_values.append(teos10.properties.entropy(t, p, gfunc=teos10.gibbs.water))
+        test_values.append(teos10.entropy(t, p, gfunc=teos10.gibbs.water))
     assert formatter(check_water["entropy"]) == formatter(test_values)
 
 
@@ -138,7 +134,7 @@ def test_density_water():
     """Compare pure water density with check values from IAPWS09."""
     test_values = []
     for t, p in zip(temperature_water, pressure_water):
-        test_values.append(teos10.properties.density(t, p, gfunc=teos10.gibbs.water))
+        test_values.append(teos10.density(t, p, gfunc=teos10.gibbs.water))
     assert formatter(check_water["density"]) == formatter(test_values)
 
 
@@ -146,9 +142,7 @@ def test_heat_capacity_water():
     """Compare pure water heat capacity with check values from IAPWS09."""
     test_values = []
     for t, p in zip(temperature_water, pressure_water):
-        test_values.append(
-            teos10.properties.heat_capacity(t, p, gfunc=teos10.gibbs.water)
-        )
+        test_values.append(teos10.heat_capacity(t, p, gfunc=teos10.gibbs.water))
     assert formatter(check_water["heat_capacity"]) == formatter(test_values)
 
 
@@ -156,7 +150,5 @@ def test_sound_speed_water():
     """Compare pure water sound speed with check values from IAPWS09."""
     test_values = []
     for t, p in zip(temperature_water, pressure_water):
-        test_values.append(
-            teos10.properties.sound_speed(t, p, gfunc=teos10.gibbs.water)
-        )
+        test_values.append(teos10.sound_speed(t, p, gfunc=teos10.gibbs.water))
     assert formatter(check_water["sound_speed"]) == formatter(test_values)

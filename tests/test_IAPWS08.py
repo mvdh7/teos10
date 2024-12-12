@@ -198,9 +198,9 @@ def test_enthalpy():
     test_values = {}
     for table, t, p, s in zip([8, 9, 10], temperatures, pressures, salinitys):
         test_values[table] = tvt = []
-        tvt.append(teos10.properties.enthalpy(t, p, gfunc=teos10.gibbs.water))
-        tvt.append(teos10.properties.enthalpy(t, p, s, gfunc=teos10.gibbs.salt))
-        tvt.append(teos10.properties.enthalpy(t, p, s, gfunc=teos10.gibbs.seawater))
+        tvt.append(teos10.enthalpy(t, p, gfunc=teos10.gibbs.water))
+        tvt.append(teos10.enthalpy(t, p, s, gfunc=teos10.gibbs.salt))
+        tvt.append(teos10.enthalpy(t, p, s, gfunc=teos10.gibbs.seawater))
         # Only the salt part should be identical
         assert formatter(check_tables[table]["enthalpy"][1]) == formatter(tvt[1])
 
@@ -210,11 +210,9 @@ def test_helmholtz_energy():
     test_values = {}
     for table, t, p, s in zip([8, 9, 10], temperatures, pressures, salinitys):
         test_values[table] = tvt = []
-        tvt.append(teos10.properties.helmholtz_energy(t, p, gfunc=teos10.gibbs.water))
-        tvt.append(teos10.properties.helmholtz_energy(t, p, s, gfunc=teos10.gibbs.salt))
-        tvt.append(
-            teos10.properties.helmholtz_energy(t, p, s, gfunc=teos10.gibbs.seawater)
-        )
+        tvt.append(teos10.helmholtz_energy(t, p, gfunc=teos10.gibbs.water))
+        tvt.append(teos10.helmholtz_energy(t, p, s, gfunc=teos10.gibbs.salt))
+        tvt.append(teos10.helmholtz_energy(t, p, s, gfunc=teos10.gibbs.seawater))
         # Only the salt part should be identical
         assert formatter(check_tables[table]["helmholtz_energy"][1]) == formatter(
             tvt[1]
@@ -226,11 +224,9 @@ def test_internal_energy():
     test_values = {}
     for table, t, p, s in zip([8, 9, 10], temperatures, pressures, salinitys):
         test_values[table] = tvt = []
-        tvt.append(teos10.properties.internal_energy(t, p, gfunc=teos10.gibbs.water))
-        tvt.append(teos10.properties.internal_energy(t, p, s, gfunc=teos10.gibbs.salt))
-        tvt.append(
-            teos10.properties.internal_energy(t, p, s, gfunc=teos10.gibbs.seawater)
-        )
+        tvt.append(teos10.internal_energy(t, p, gfunc=teos10.gibbs.water))
+        tvt.append(teos10.internal_energy(t, p, s, gfunc=teos10.gibbs.salt))
+        tvt.append(teos10.internal_energy(t, p, s, gfunc=teos10.gibbs.seawater))
         # Only the salt part should be identical
         assert formatter(check_tables[table]["internal_energy"][1]) == formatter(tvt[1])
 
@@ -240,9 +236,9 @@ def test_entropy():
     test_values = {}
     for table, t, p, s in zip([8, 9, 10], temperatures, pressures, salinitys):
         test_values[table] = tvt = []
-        tvt.append(teos10.properties.entropy(t, p, gfunc=teos10.gibbs.water))
-        tvt.append(teos10.properties.entropy(t, p, s, gfunc=teos10.gibbs.salt))
-        tvt.append(teos10.properties.entropy(t, p, s, gfunc=teos10.gibbs.seawater))
+        tvt.append(teos10.entropy(t, p, gfunc=teos10.gibbs.water))
+        tvt.append(teos10.entropy(t, p, s, gfunc=teos10.gibbs.salt))
+        tvt.append(teos10.entropy(t, p, s, gfunc=teos10.gibbs.seawater))
         # Only the salt part should be identical
         assert formatter(check_tables[table]["entropy"][1]) == formatter(tvt[1])
 
@@ -252,9 +248,9 @@ def test_density():
     test_values = {}
     for table, t, p, s in zip([8, 9, 10], temperatures, pressures, salinitys):
         test_values[table] = tvt = []
-        tvt.append(teos10.properties.density(t, p, gfunc=teos10.gibbs.water))
+        tvt.append(teos10.density(t, p, gfunc=teos10.gibbs.water))
         tvt.append(np.nan)
-        tvt.append(teos10.properties.density(t, p, s, gfunc=teos10.gibbs.seawater))
+        tvt.append(teos10.density(t, p, s, gfunc=teos10.gibbs.seawater))
         # Only the salt part should be identical
         assert formatter(check_tables[table]["density"][1]) == formatter(tvt[1])
 
@@ -264,11 +260,9 @@ def test_heat_capacity():
     test_values = {}
     for table, t, p, s in zip([8, 9, 10], temperatures, pressures, salinitys):
         test_values[table] = tvt = []
-        tvt.append(teos10.properties.heat_capacity(t, p, gfunc=teos10.gibbs.water))
-        tvt.append(teos10.properties.heat_capacity(t, p, s, gfunc=teos10.gibbs.salt))
-        tvt.append(
-            teos10.properties.heat_capacity(t, p, s, gfunc=teos10.gibbs.seawater)
-        )
+        tvt.append(teos10.heat_capacity(t, p, gfunc=teos10.gibbs.water))
+        tvt.append(teos10.heat_capacity(t, p, s, gfunc=teos10.gibbs.salt))
+        tvt.append(teos10.heat_capacity(t, p, s, gfunc=teos10.gibbs.seawater))
         # Only the salt part should be identical
         assert formatter(check_tables[table]["heat_capacity"][1]) == formatter(tvt[1])
 
@@ -278,9 +272,9 @@ def test_sound_speed():
     test_values = {}
     for table, t, p, s in zip([8, 9, 10], temperatures, pressures, salinitys):
         test_values[table] = tvt = []
-        tvt.append(teos10.properties.sound_speed(t, p, gfunc=teos10.gibbs.water))
+        tvt.append(teos10.sound_speed(t, p, gfunc=teos10.gibbs.water))
         tvt.append(np.nan)
-        tvt.append(teos10.properties.sound_speed(t, p, s, gfunc=teos10.gibbs.seawater))
+        tvt.append(teos10.sound_speed(t, p, s, gfunc=teos10.gibbs.seawater))
         # Only the salt part should be identical
         assert formatter(check_tables[table]["sound_speed"][1]) == formatter(tvt[1])
 
@@ -290,16 +284,10 @@ def test_chemical_potential_water():
     test_values = {}
     for table, t, p, s in zip([8, 9, 10], temperatures, pressures, salinitys):
         test_values[table] = tvt = []
+        tvt.append(teos10.chemical_potential_water(t, p, gfunc=teos10.gibbs.water))
+        tvt.append(teos10.chemical_potential_water(t, p, s, gfunc=teos10.gibbs.salt))
         tvt.append(
-            teos10.properties.chemical_potential_water(t, p, gfunc=teos10.gibbs.water)
-        )
-        tvt.append(
-            teos10.properties.chemical_potential_water(t, p, s, gfunc=teos10.gibbs.salt)
-        )
-        tvt.append(
-            teos10.properties.chemical_potential_water(
-                t, p, s, gfunc=teos10.gibbs.seawater
-            )
+            teos10.chemical_potential_water(t, p, s, gfunc=teos10.gibbs.seawater)
         )
         # Only the salt part should be identical
         assert formatter(
