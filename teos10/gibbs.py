@@ -3,27 +3,65 @@
 """Gibbs energy functions."""
 
 import itertools
+from collections import namedtuple
 
 from jax import numpy as np
 
 from . import constants
 
+GibbsValidity = namedtuple("GibbsValidity", ("total", "temperature", "pressure"))
 
-def water(temperature, pressure):
-    """Gibbs energy of pure water in J/kg.
 
-    Source: http://www.teos-10.org/pubs/IAPWS-2009-Supplementary.pdf (IAPWS09)
+def validity(temperature, pressure):
+    """Validity checker for input temperature and pressure values.
 
-    Validity:
+    The validity ranges are:
         100 < pressure_Pa < 1e8 Pa
        (270.5 - pressure_Pa*7.43e-8) < temperature < 313.15 K
+    where pressure_Pa = pressure * 10000.
 
     Parameters
     ----------
     temperature : float
         Temperature in K.
     pressure : float
-        Hydrostatic pressure in dbar.
+        Pressure in dbar.
+
+    Returns
+    -------
+    GibbsValidity (namedtuple)
+        Whether the input temperature(s) and pressure(s) are valid, separated into the
+        component fields:
+            total : bool
+                Whether both temperature and pressure are valid.
+            temperature : bool
+                Whether the temperature is valid.
+            pressure : bool
+                Whether the pressure is valid.
+    """
+    pressure_Pa = pressure * constants.dbar_to_Pa
+    vt = ((270.5 - pressure_Pa * 7.43e-8) < temperature) & (temperature <= 313.15)
+    vp = (100 <= pressure_Pa) & (pressure_Pa <= 1e8)
+    valid = vt & vp
+    return GibbsValidity(valid, vt, vp)
+
+
+def water(temperature, pressure):
+    """Gibbs energy of pure water in J/kg.
+
+    Source: http://www.teos-10.org/pubs/IAPWS-2009-Supplementary.pdf (IAPWS09).
+
+    Validity:
+        100 < pressure_Pa < 1e8 Pa
+       (270.5 - pressure_Pa*7.43e-8) < temperature < 313.15 K
+    where pressure_Pa = pressure * 10000.
+
+    Parameters
+    ----------
+    temperature : float
+        Temperature in K.
+    pressure : float
+        Pressure in dbar.
 
     Returns
     -------
@@ -90,20 +128,21 @@ def water(temperature, pressure):
 def salt(temperature, pressure, salinity):
     """Saline part of the Gibbs energy of seawater in J/kg.
 
-    Source: http://www.teos-10.org/pubs/IAPWS-08.pdf (IAPWS08)
+    Source: http://www.teos-10.org/pubs/IAPWS-08.pdf (IAPWS08).
 
     Validity:
-      * 100 < pressure_Pa < 1e8 Pa
-      * (270.5 - pressure_Pa*7.43e-8) < temperature < 313.15 K
+        100 < pressure_Pa < 1e8 Pa
+        (270.5 - pressure_Pa*7.43e-8) < temperature < 313.15 K
+     where pressure_Pa = pressure * 10000.
 
     Parameters
     ----------
     temperature : float
         Temperature in K.
-    pressure_Pa : float
-        Hydrostatic pressure in dbar.
+    pressure : float
+        Pressure in dbar.
     salinity : float
-        Practical salinity.
+        Reference-composition salinity in g/kg.
 
     Returns
     -------
@@ -205,10 +244,10 @@ def seawater(temperature, pressure_Pa, salinity):
     ----------
     temperature : float
         Temperature in K.
-    pressure_Pa : float
-        Pressure in Pa.
+    pressure : float
+        Pressure in dbar.
     salinity : float
-        Practical salinity.
+        Reference-composition salinity in g/kg.
 
     Returns
     -------
