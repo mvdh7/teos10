@@ -1,0 +1,12 @@
+{
+    "description": "", 
+    "license": "GPL-3.0-only", 
+    "title": "teos10: Unofficial Python implementation of the TEOS-10 properties of (sea)water", 
+    "creators": [
+        {
+            "affiliation": "NIOZ Royal Netherlands Institute for Sea Research, Texel, the Netherlands", 
+            "name": "Humphreys, Matthew P.",
+            "orcid": "0000-0002-9371-7128"
+        }
+    ]
+}
