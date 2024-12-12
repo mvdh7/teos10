@@ -27,3 +27,7 @@ See the module-level docstring.
     import teos10
     teos10?
 ```
+
+## Citation
+
+Humphreys, M.P. (2024). teos10: Unofficial Python implementation of the TEOS-10 properties of (sea)water (v0.1). Zenodo. [doi:10.5281/zenodo.14417936](https://doi.org/10.5281/zenodo.14417936)
