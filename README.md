@@ -14,3 +14,16 @@ Unofficial Python implementation of the TEOS-10 properties of water.
 >
 > Because the functions here in teos10 can be automatically differentiated with [JAX](https://jax.readthedocs.io/en/latest/).
 
+## Installation
+
+    pip install teos10
+    conda install conda-forge::teos10
+
+## Usage
+
+See the module-level docstring.
+
+```python
+    import teos10
+    teos10?
+```
